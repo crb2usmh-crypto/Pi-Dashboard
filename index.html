@@ -5,8 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pi Dashboard</title>
     <link rel="stylesheet" href="style.css">
+    
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- ============================== -->
+    <!-- Monetag SDK (الإعلانات)       -->
+    <!-- استبدل الرابط أدناه بالرابط الذي نسخته من Monetag -->
+    <!-- ============================== -->
+    <script src="https://monetag.com/sdk.js" data-zone="11183003"></script>
+    <!-- مثال: <script src="https://domain.com/vignette.min.js" data-zone="XXXXXX"></script> -->
+    <!-- ============================== -->
 </head>
 <body>
     <div class="container">
@@ -55,6 +64,36 @@
             <p>🛡️ Raskov Security Bot &copy; 2026</p>
         </footer>
     </div>
+
+    <!-- ============================== -->
+    <!--  تفعيل الإعلانات البينية (In-App Interstitial) -->
+    <!-- ============================== -->
+    <script>
+        // انتظر تحميل SDK ثم فعّل الإعلانات
+        function activateMonetagAds() {
+            if (typeof show_11183003 === 'function') {
+                show_11183003({
+                    type: 'inApp',
+                    inAppSettings: {
+                        frequency: 2,          // عدد مرات الظهور
+                        capping: 0.1,          // 0.1 ساعة = 6 دقائق
+                        interval: 30,          // 30 ثانية بين كل إعلان والآخر
+                        timeout: 5,            // 5 ثوانٍ تأخير قبل أول إعلان
+                        everyPage: false       // لا تعيد ضبط العداد عند التنقل بين الصفحات
+                    }
+                });
+                console.log('✅ تم تفعيل إعلانات Monetag (In-App Interstitial)');
+            } else {
+                console.warn('⚠️ Monetag SDK لم يتم تحميله بعد. حاول مجدداً.');
+                // إعادة المحاولة بعد ثانية
+                setTimeout(activateMonetagAds, 1000);
+            }
+        }
+
+        // تشغيل التفعيل عند تحميل الصفحة
+        window.addEventListener('load', activateMonetagAds);
+    </script>
+    <!-- ============================== -->
 
     <script src="script.js"></script>
 </body>
