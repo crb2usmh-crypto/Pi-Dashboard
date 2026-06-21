@@ -10,11 +10,11 @@ if (user) {
 
 // ===================== إعدادات Supabase =====================
 // 🔴 استبدل هذه القيم ببياناتك من Supabase (Settings → API)
-const SUPABASE_URL = 'https://your-project-id.supabase.co';
-const SUPABASE_ANON_KEY = 'your-anon-public-key';
+const SUPABASE_URL = 'https://vclzkdfoksiyxnzlcqwh.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjbHprZGZva3NpeXhuemxjcXdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwMjA3ODcsImV4cCI6MjA5NzU5Njc4N30.j1eyDmNDU4U9Zgcqe5Gu6nHjoj1ET_8KpDKMzgGLolE';
 
 // 🔴 استبدل هذا المعرف بمعرف مجموعتك (يبدأ بـ -100)
-const CHAT_ID = -1001234567890;
+const CHAT_ID = -1004439757955;
 
 // ===================== جلب سعر Pi =====================
 async function fetchPiPrice() {
