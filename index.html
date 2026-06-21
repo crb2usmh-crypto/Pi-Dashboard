@@ -4,45 +4,189 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pi Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-    
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- ========================================================= -->
-    <!-- كود تثبيت Monetag (تم نسخه من لوحة التحكم) -->
-    <!-- ========================================================= -->
-    <script src='https://libtl.com/sdk.js' data-zone='11183003' data-sdk='show_11183003'></script>
-    <!-- ========================================================= -->
+    <style>
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #ffffff);
+            --text-color: var(--tg-theme-text-color, #000000);
+            --hint-color: var(--tg-theme-hint-color, #8e8e93);
+            --accent-color: var(--tg-theme-accent-text-color, #007aff);
+            --secondary-bg: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            --button-color: var(--tg-theme-button-color, #007aff);
+            --button-text: var(--tg-theme-button-text-color, #ffffff);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            padding: 16px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--hint-color);
+        }
+        header h1 {
+            font-size: 22px;
+            color: var(--accent-color);
+        }
+        header #user-greeting {
+            font-size: 14px;
+            color: var(--hint-color);
+        }
+        .card {
+            background: var(--secondary-bg);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: var(--accent-color);
+        }
+        .price-display {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 8px;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        .price-display .currency {
+            font-size: 16px;
+            font-weight: normal;
+            color: var(--hint-color);
+        }
+        .last-update {
+            text-align: center;
+            font-size: 12px;
+            color: var(--hint-color);
+            margin-top: 4px;
+        }
+        .btn {
+            background: var(--button-color);
+            color: var(--button-text);
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.2s;
+            margin-top: 8px;
+        }
+        .btn:active {
+            opacity: 0.7;
+        }
+        .converter-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .converter-row input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--hint-color);
+            border-radius: 10px;
+            font-size: 16px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            outline: none;
+        }
+        .converter-row input:focus {
+            border-color: var(--accent-color);
+        }
+        .converter-row .arrow {
+            font-size: 20px;
+            color: var(--hint-color);
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--hint-color);
+        }
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        .stat-label {
+            color: var(--hint-color);
+        }
+        .stat-value {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        .badge {
+            background: var(--accent-color);
+            color: var(--button-text);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--hint-color);
+            font-size: 12px;
+        }
+        .loading {
+            text-align: center;
+            padding: 10px;
+            color: var(--hint-color);
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="app">
         <header>
             <h1>📊 Pi Dashboard</h1>
-            <p id="user-greeting">مرحباً بك!</p>
+            <span id="user-greeting">مرحباً!</span>
         </header>
 
-        <section class="card price-card">
+        <!-- بطاقة السعر -->
+        <section class="card">
             <h2>💰 سعر Pi Coin</h2>
             <div class="price-display">
                 <span id="pi-price">...جاري التحميل</span>
                 <span class="currency">USD</span>
             </div>
-            <small>آخر تحديث: <span id="last-update">-</span></small>
-            <button id="refresh-btn" class="btn">🔄 تحديث</button>
+            <div class="last-update">آخر تحديث: <span id="last-update">-</span></div>
+            <button id="refresh-price" class="btn">🔄 تحديث السعر</button>
         </section>
 
-        <section class="card converter">
+        <!-- محول العملات -->
+        <section class="card">
             <h2>🔄 محول العملات</h2>
             <div class="converter-row">
-                <input type="number" id="pi-input" placeholder="أدخل قيمة Pi" value="1">
+                <input type="number" id="pi-input" placeholder="Pi" value="1">
                 <span class="arrow">➡️</span>
-                <input type="number" id="usd-input" placeholder="القيمة بالدولار" readonly>
+                <input type="number" id="usd-input" placeholder="USD" readonly>
             </div>
             <button id="convert-btn" class="btn">تحويل</button>
         </section>
 
-        <section class="card stats-card">
+        <!-- إحصائيات المجموعة -->
+        <section class="card">
             <h2>📈 إحصائيات المجموعة</h2>
             <div class="stat-item">
                 <span class="stat-label">👤 الأعضاء</span>
@@ -56,42 +200,13 @@
                 <span class="stat-label">🚫 المحظورين</span>
                 <span class="stat-value" id="bans-count">-</span>
             </div>
+            <button id="refresh-stats" class="btn">🔄 تحديث الإحصائيات</button>
         </section>
 
         <footer>
-            <p>🛡️ Raskov Security Bot &copy; 2026</p>
+            🛡️ Raskov Security Bot &copy; 2026
         </footer>
     </div>
-
-    <!-- ========================================= -->
-    <!--  تفعيل الإعلانات البينية (In-App Interstitial) -->
-    <!-- ========================================= -->
-    <script>
-        // انتظر تحميل SDK ثم فعّل الإعلانات
-        function activateMonetagAds() {
-            // الدالة show_11183003 تم تعريفها بواسطة الكود الذي وضعناه في <head>
-            if (typeof show_11183003 === 'function') {
-                show_11183003({
-                    type: 'inApp',
-                    inAppSettings: {
-                        frequency: 2,          // عدد مرات الظهور
-                        capping: 0.1,          // 0.1 ساعة = 6 دقائق
-                        interval: 30,          // 30 ثانية بين كل إعلان والآخر
-                        timeout: 5,            // 5 ثوانٍ تأخير قبل أول إعلان
-                        everyPage: false       // لا تعيد ضبط العداد عند التنقل بين الصفحات
-                    }
-                });
-                console.log('✅ تم تفعيل إعلانات Monetag (In-App Interstitial)');
-            } else {
-                console.warn('⚠️ Monetag SDK لم يتم تحميله بعد. حاول مجدداً.');
-                // إعادة المحاولة بعد ثانية
-                setTimeout(activateMonetagAds, 1000);
-            }
-        }
-
-        // تشغيل التفعيل عند تحميل الصفحة
-        window.addEventListener('load', activateMonetagAds);
-    </script>
 
     <script src="script.js"></script>
 </body>
