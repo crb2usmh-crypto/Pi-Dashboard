@@ -9,13 +9,11 @@
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-    <!-- ============================== -->
-    <!-- Monetag SDK (الإعلانات)       -->
-    <!-- استبدل الرابط أدناه بالرابط الذي نسخته من Monetag -->
-    <!-- ============================== -->
-    <script src="https://monetag.com/sdk.js" data-zone="11183003"></script>
-    <!-- مثال: <script src="https://domain.com/vignette.min.js" data-zone="XXXXXX"></script> -->
-    <!-- ============================== -->
+    <!-- ========================================================= -->
+    <!-- كود تثبيت Monetag (تم نسخه من لوحة التحكم) -->
+    <!-- ========================================================= -->
+    <script src='https://libtl.com/sdk.js' data-zone='11183003' data-sdk='show_11183003'></script>
+    <!-- ========================================================= -->
 </head>
 <body>
     <div class="container">
@@ -65,12 +63,13 @@
         </footer>
     </div>
 
-    <!-- ============================== -->
+    <!-- ========================================= -->
     <!--  تفعيل الإعلانات البينية (In-App Interstitial) -->
-    <!-- ============================== -->
+    <!-- ========================================= -->
     <script>
         // انتظر تحميل SDK ثم فعّل الإعلانات
         function activateMonetagAds() {
+            // الدالة show_11183003 تم تعريفها بواسطة الكود الذي وضعناه في <head>
             if (typeof show_11183003 === 'function') {
                 show_11183003({
                     type: 'inApp',
@@ -93,7 +92,6 @@
         // تشغيل التفعيل عند تحميل الصفحة
         window.addEventListener('load', activateMonetagAds);
     </script>
-    <!-- ============================== -->
 
     <script src="script.js"></script>
 </body>
