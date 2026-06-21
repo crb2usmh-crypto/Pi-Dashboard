@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pi Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Pi Dashboard</h1>
+            <p id="user-greeting">مرحباً بك!</p>
+        </header>
+
+        <section class="card price-card">
+            <h2>💰 سعر Pi Coin</h2>
+            <div class="price-display">
+                <span id="pi-price">...جاري التحميل</span>
+                <span class="currency">USD</span>
+            </div>
+            <small>آخر تحديث: <span id="last-update">-</span></small>
+            <button id="refresh-btn" class="btn">🔄 تحديث</button>
+        </section>
+
+        <section class="card converter">
+            <h2>🔄 محول العملات</h2>
+            <div class="converter-row">
+                <input type="number" id="pi-input" placeholder="أدخل قيمة Pi" value="1">
+                <span class="arrow">➡️</span>
+                <input type="number" id="usd-input" placeholder="القيمة بالدولار" readonly>
+            </div>
+            <button id="convert-btn" class="btn">تحويل</button>
+        </section>
+
+        <section class="card stats-card">
+            <h2>📈 إحصائيات المجموعة</h2>
+            <div class="stat-item">
+                <span class="stat-label">👤 الأعضاء</span>
+                <span class="stat-value" id="members-count">-</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">⚠️ المخالفات</span>
+                <span class="stat-value" id="violations-count">-</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">🚫 المحظورين</span>
+                <span class="stat-value" id="bans-count">-</span>
+            </div>
+        </section>
+
+        <footer>
+            <p>🛡️ Raskov Security Bot &copy; 2026</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
