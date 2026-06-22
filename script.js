@@ -8,13 +8,33 @@ if (user) {
     document.getElementById('user-greeting').textContent = `مرحباً ${user.first_name}! 👋`;
 }
 
+// ===================== استخراج chat_id من الرابط =====================
+function getChatIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const chatId = params.get('chat_id');
+    if (chatId) {
+        return parseInt(chatId);
+    }
+    return null;
+}
+
+const CHAT_ID = getChatIdFromUrl();
+
+// عرض chat_id في الواجهة (اختياري)
+if (CHAT_ID) {
+    document.getElementById('chat-id-display').textContent = CHAT_ID;
+} else {
+    document.getElementById('chat-id-display').textContent = '⚠️ افتح التطبيق من زر البوت';
+    document.getElementById('members-count').textContent = '⚠️ لم يتم التعرف';
+    document.getElementById('violations-count').textContent = '⚠️ على المجموعة';
+    document.getElementById('bans-count').textContent = '⚠️';
+    console.error('⚠️ لم يتم تمرير chat_id في الرابط');
+}
+
 // ===================== إعدادات Supabase =====================
 // 🔴 استبدل هذه القيم ببياناتك من Supabase (Settings → API)
-const SUPABASE_URL = 'https://vclzkdfoksiyxnzlcqwh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjbHprZGZva3NpeXhuemxjcXdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwMjA3ODcsImV4cCI6MjA5NzU5Njc4N30.j1eyDmNDU4U9Zgcqe5Gu6nHjoj1ET_8KpDKMzgGLolE';
-
-// 🔴 استبدل هذا المعرف بمعرف مجموعتك (يبدأ بـ -100)
-const CHAT_ID = -1004439757955;
+const SUPABASE_URL = 'https://vclzkdfoksiyxnzlcqwh.supabase.co';      // ✅ استبدل برابط مشروعك
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjbHprZGZva3NpeXhuemxjcXdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwMjA3ODcsImV4cCI6MjA5NzU5Njc4N30.j1eyDmNDU4U9Zgcqe5Gu6nHjoj1ET_8KpDKMzgGLolE';               // ✅ استبدل بالمفتاح العام
 
 // ===================== جلب سعر Pi =====================
 async function fetchPiPrice() {
@@ -35,10 +55,19 @@ async function fetchPiPrice() {
 
 // ===================== جلب إحصائيات المجموعة من Supabase =====================
 async function fetchGroupStats() {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-        console.warn('Supabase not configured');
+    if (!CHAT_ID) {
+        console.warn('⚠️ لا يوجد chat_id، لن يتم جلب الإحصائيات');
         return;
     }
+
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+        console.warn('⚠️ Supabase not configured');
+        document.getElementById('members-count').textContent = '⚠️ خطأ في الإعدادات';
+        document.getElementById('violations-count').textContent = '⚠️ خطأ في الإعدادات';
+        document.getElementById('bans-count').textContent = '⚠️ خطأ في الإعدادات';
+        return;
+    }
+
     try {
         const response = await fetch(`${SUPABASE_URL}/rest/v1/group_stats?chat_id=eq.${CHAT_ID}&select=*`, {
             headers: {
