@@ -137,9 +137,12 @@ document.getElementById('convert-btn').addEventListener('click', function() {
     }
 });
 
-// ===================== 🆕 تذكير التعدين اليومي =====================
+// ===================== ⏰ تذكير التعدين (يبدأ عند الضغط) =====================
+let miningTimerInterval = null;
+let miningEndTime = null;
+let isMiningTimerRunning = false;
+
 function getNextMiningTime() {
-    // يحسب وقت التعدين القادم (كل 24 ساعة من الآن)
     const now = new Date();
     const next = new Date(now);
     next.setHours(now.getHours() + 24);
@@ -150,13 +153,29 @@ function getNextMiningTime() {
 }
 
 function updateMiningTimer() {
-    const next = getNextMiningTime();
+    if (!miningEndTime) {
+        document.getElementById('mining-timer').textContent = '⏳ اضغط للتذكير';
+        document.getElementById('mining-timer').style.color = 'var(--hint-color)';
+        return;
+    }
+    
     const now = new Date();
-    const diff = next - now;
+    const diff = miningEndTime - now;
     
     if (diff <= 0) {
+        clearInterval(miningTimerInterval);
+        isMiningTimerRunning = false;
+        miningEndTime = null;
         document.getElementById('mining-timer').textContent = '🟢 جاهز للتعدين!';
         document.getElementById('mining-timer').style.color = '#34c759';
+        // إظهار إشعار عند انتهاء الوقت
+        tg.showPopup({
+            title: '⏰ تذكير التعدين',
+            message: '🔔 حان وقت التعدين! افتح تطبيق Pi الآن.',
+            buttons: [{type: 'ok'}]
+        });
+        // إرسال بيانات للبوت لإرسال تذكير (اختياري)
+        tg.sendData(JSON.stringify({ type: 'mining_reminder', chat_id: CHAT_ID }));
         return;
     }
     
@@ -169,11 +188,36 @@ function updateMiningTimer() {
     document.getElementById('mining-timer').style.color = 'var(--text-color)';
 }
 
-function scheduleMiningReminder() {
-    // تذكير كل دقيقة
-    setInterval(updateMiningTimer, 1000);
+function startMiningReminder() {
+    if (isMiningTimerRunning) {
+        tg.showPopup({
+            title: '⏰ تذكير',
+            message: 'التذكير يعمل بالفعل! انتظر حتى نهاية العد التنازلي.',
+            buttons: [{type: 'ok'}]
+        });
+        return;
+    }
+    
+    // تعيين وقت الانتهاء (بعد 24 ساعة من الآن)
+    miningEndTime = getNextMiningTime();
+    isMiningTimerRunning = true;
+    
+    // تحديث العد التنازلي فوراً
     updateMiningTimer();
+    
+    // تحديث كل ثانية
+    if (miningTimerInterval) clearInterval(miningTimerInterval);
+    miningTimerInterval = setInterval(updateMiningTimer, 1000);
+    
+    tg.showPopup({
+        title: '✅ تم التفعيل',
+        message: 'تم تفعيل تذكير التعدين. سنذكرك بعد 24 ساعة.',
+        buttons: [{type: 'ok'}]
+    });
 }
+
+// ربط الزر بالدالة
+document.getElementById('remind-btn').addEventListener('click', startMiningReminder);
 
 // ===================== 🆕 حساب المكافآت =====================
 function calculateRewards() {
