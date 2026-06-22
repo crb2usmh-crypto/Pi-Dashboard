@@ -155,6 +155,69 @@
             font-size: 12px;
             font-weight: 600;
         }
+        .group-info {
+            font-size: 12px;
+            color: var(--hint-color);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .mining-timer {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            padding: 8px 0;
+        }
+        .news-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--hint-color);
+        }
+        .news-item:last-child {
+            border-bottom: none;
+        }
+        .news-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .news-date {
+            font-size: 12px;
+            color: var(--hint-color);
+        }
+        .news-link {
+            font-size: 13px;
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        .reward-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--hint-color);
+        }
+        .reward-row:last-child {
+            border-bottom: none;
+        }
+        .reward-label {
+            color: var(--hint-color);
+        }
+        .reward-value {
+            font-weight: 600;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .input-group input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--hint-color);
+            border-radius: 8px;
+            font-size: 16px;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
         footer {
             text-align: center;
             margin-top: 20px;
@@ -166,12 +229,6 @@
             padding: 10px;
             color: var(--hint-color);
         }
-        .group-info {
-            font-size: 12px;
-            color: var(--hint-color);
-            margin-bottom: 8px;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
@@ -181,7 +238,7 @@
             <span id="user-greeting">مرحباً!</span>
         </header>
 
-        <!-- بطاقة السعر -->
+        <!-- ====== بطاقة السعر ====== -->
         <section class="card">
             <h2>💰 سعر Pi Coin</h2>
             <div class="price-display">
@@ -192,7 +249,7 @@
             <button id="refresh-price" class="btn">🔄 تحديث السعر</button>
         </section>
 
-        <!-- محول العملات -->
+        <!-- ====== محول العملات ====== -->
         <section class="card">
             <h2>🔄 محول العملات</h2>
             <div class="converter-row">
@@ -203,7 +260,52 @@
             <button id="convert-btn" class="btn">تحويل</button>
         </section>
 
-        <!-- إحصائيات المجموعة -->
+        <!-- ====== 🆕 تذكير التعدين ====== -->
+        <section class="card">
+            <h2>⏰ تذكير التعدين</h2>
+            <div class="mining-timer" id="mining-timer">--:--:--</div>
+            <p style="text-align:center; font-size:13px; color:var(--hint-color);">
+                الوقت المتبقي حتى التعدين القادم
+            </p>
+            <button id="remind-btn" class="btn btn-secondary" onclick="tg.showPopup({title: '⏰ تذكير', message: 'سيتم تذكيرك عند موعد التعدين القادم!', buttons: [{type:'ok'}]})">
+                🔔 تذكير عند التعدين
+            </button>
+        </section>
+
+        <!-- ====== 🆕 أخبار Pi Network ====== -->
+        <section class="card">
+            <h2>📰 أخبار Pi Network</h2>
+            <div id="news-list" class="loading">جاري تحميل الأخبار...</div>
+            <button id="refresh-news" class="btn btn-secondary">🔄 تحديث الأخبار</button>
+        </section>
+
+        <!-- ====== 🆕 حاسبة المكافآت ====== -->
+        <section class="card">
+            <h2>💰 حاسبة المكافآت</h2>
+            <div class="input-group">
+                <span style="color:var(--hint-color);">👥 أعضاء دائرة الأمان:</span>
+                <input type="number" id="security-circle" value="0" min="0" max="100">
+            </div>
+            <div style="margin-top:12px;">
+                <div class="reward-row">
+                    <span class="reward-label">⏱️ في الساعة</span>
+                    <span class="reward-value" id="reward-hourly">0.0000</span>
+                </div>
+                <div class="reward-row">
+                    <span class="reward-label">📅 في اليوم</span>
+                    <span class="reward-value" id="reward-daily">0.0000</span>
+                </div>
+                <div class="reward-row">
+                    <span class="reward-label">📆 في الشهر</span>
+                    <span class="reward-value" id="reward-monthly">0.00</span>
+                </div>
+            </div>
+            <p style="font-size:12px; color:var(--hint-color); margin-top:8px; text-align:center;">
+                * تقديري يعتمد على معادلة مبسطة، قد تختلف القيم الفعلية.
+            </p>
+        </section>
+
+        <!-- ====== إحصائيات المجموعة ====== -->
         <section class="card">
             <h2>📈 إحصائيات المجموعة</h2>
             <div class="group-info">📌 معرف المجموعة: <span id="chat-id-display">...</span></div>
@@ -222,7 +324,7 @@
             <button id="refresh-stats" class="btn">🔄 تحديث الإحصائيات</button>
         </section>
 
-        <!-- زر الإعلان -->
+        <!-- ====== زر الإعلان ====== -->
         <section class="card">
             <h2>📺 الإعلانات</h2>
             <button id="showAdBtn" class="btn btn-secondary">📢 مشاهدة إعلان (يدوي)</button>
