@@ -20,7 +20,6 @@ function getChatIdFromUrl() {
 
 const CHAT_ID = getChatIdFromUrl();
 
-// عرض chat_id في الواجهة (اختياري)
 if (CHAT_ID) {
     document.getElementById('chat-id-display').textContent = CHAT_ID;
 } else {
@@ -32,7 +31,6 @@ if (CHAT_ID) {
 }
 
 // ===================== إعدادات Supabase =====================
-// 🔴 استبدل هذه القيم ببياناتك من Supabase (Settings → API)
 const SUPABASE_URL = 'https://vclzkdfoksiyxnzlcqwh.supabase.co';      // ✅ استبدل برابط مشروعك
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjbHprZGZva3NpeXhuemxjcXdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwMjA3ODcsImV4cCI6MjA5NzU5Njc4N30.j1eyDmNDU4U9Zgcqe5Gu6nHjoj1ET_8KpDKMzgGLolE';               // ✅ استبدل بالمفتاح العام
 
@@ -139,6 +137,98 @@ document.getElementById('convert-btn').addEventListener('click', function() {
     }
 });
 
+// ===================== 🆕 تذكير التعدين اليومي =====================
+function getNextMiningTime() {
+    // يحسب وقت التعدين القادم (كل 24 ساعة من الآن)
+    const now = new Date();
+    const next = new Date(now);
+    next.setHours(now.getHours() + 24);
+    next.setMinutes(0);
+    next.setSeconds(0);
+    next.setMilliseconds(0);
+    return next;
+}
+
+function updateMiningTimer() {
+    const next = getNextMiningTime();
+    const now = new Date();
+    const diff = next - now;
+    
+    if (diff <= 0) {
+        document.getElementById('mining-timer').textContent = '🟢 جاهز للتعدين!';
+        document.getElementById('mining-timer').style.color = '#34c759';
+        return;
+    }
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    document.getElementById('mining-timer').textContent = 
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    document.getElementById('mining-timer').style.color = 'var(--text-color)';
+}
+
+function scheduleMiningReminder() {
+    // تذكير كل دقيقة
+    setInterval(updateMiningTimer, 1000);
+    updateMiningTimer();
+}
+
+// ===================== 🆕 حساب المكافآت =====================
+function calculateRewards() {
+    const membersInput = document.getElementById('security-circle');
+    let members = parseInt(membersInput.value) || 0;
+    if (members < 0) members = 0;
+    if (members > 100) members = 100;
+    membersInput.value = members;
+    
+    // معادلة تقديرية (افتراضية) - يمكن تعديلها حسب معلومات Pi الرسمية
+    const baseRate = 0.1; // Pi في الساعة
+    const bonusPerMember = 0.02; // مكافأة إضافية لكل عضو في دائرة الأمان
+    const hourlyRate = baseRate + (members * bonusPerMember);
+    const dailyRate = hourlyRate * 24;
+    const monthlyRate = dailyRate * 30;
+    
+    document.getElementById('reward-hourly').textContent = hourlyRate.toFixed(4);
+    document.getElementById('reward-daily').textContent = dailyRate.toFixed(4);
+    document.getElementById('reward-monthly').textContent = monthlyRate.toFixed(2);
+}
+
+// ===================== 🆕 أخبار Pi Network =====================
+async function fetchPiNews() {
+    const newsContainer = document.getElementById('news-list');
+    newsContainer.innerHTML = '<div class="loading">جاري تحميل الأخبار...</div>';
+    
+    try {
+        // مصدر بديل للأخبار (RSS to JSON)
+        const response = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fminepi.com%2Fblog%2Ffeed%2F');
+        if (!response.ok) throw new Error('فشل جلب الأخبار');
+        const data = await response.json();
+        
+        if (data.items && data.items.length > 0) {
+            newsContainer.innerHTML = '';
+            // عرض آخر 5 أخبار
+            data.items.slice(0, 5).forEach(item => {
+                const newsItem = document.createElement('div');
+                newsItem.className = 'news-item';
+                const date = new Date(item.pubDate);
+                newsItem.innerHTML = `
+                    <div class="news-title">${item.title}</div>
+                    <div class="news-date">${date.toLocaleDateString('ar-EG')}</div>
+                    <a href="${item.link}" target="_blank" class="news-link">🔗 قراءة المزيد</a>
+                `;
+                newsContainer.appendChild(newsItem);
+            });
+        } else {
+            newsContainer.innerHTML = '<div class="loading">⚠️ لا توجد أخبار حالياً</div>';
+        }
+    } catch (error) {
+        console.error(error);
+        newsContainer.innerHTML = '<div class="loading">⚠️ تعذر تحميل الأخبار</div>';
+    }
+}
+
 // ===================== أزرار التحديث =====================
 document.getElementById('refresh-price').addEventListener('click', async function() {
     currentPrice = await fetchPiPrice();
@@ -153,6 +243,10 @@ document.getElementById('refresh-stats').addEventListener('click', function() {
     fetchGroupStats();
 });
 
+document.getElementById('refresh-news').addEventListener('click', function() {
+    fetchPiNews();
+});
+
 // ===================== التهيئة =====================
 (async function init() {
     currentPrice = await fetchPiPrice();
@@ -161,4 +255,12 @@ document.getElementById('refresh-stats').addEventListener('click', function() {
         document.getElementById('usd-input').value = usdVal.toFixed(4);
     }
     await fetchGroupStats();
+    await fetchPiNews();
+    scheduleMiningReminder();
+    
+    // حساب المكافآت الافتراضي
+    calculateRewards();
+    
+    // ربط حساب المكافآت بتغيير المدخلات
+    document.getElementById('security-circle').addEventListener('input', calculateRewards);
 })();
