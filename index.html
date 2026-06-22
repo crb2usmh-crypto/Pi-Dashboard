@@ -166,6 +166,12 @@
             padding: 10px;
             color: var(--hint-color);
         }
+        .group-info {
+            font-size: 12px;
+            color: var(--hint-color);
+            margin-bottom: 8px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -200,6 +206,7 @@
         <!-- إحصائيات المجموعة -->
         <section class="card">
             <h2>📈 إحصائيات المجموعة</h2>
+            <div class="group-info">📌 معرف المجموعة: <span id="chat-id-display">...</span></div>
             <div class="stat-item">
                 <span class="stat-label">👤 الأعضاء</span>
                 <span class="stat-value" id="members-count">-</span>
@@ -215,7 +222,7 @@
             <button id="refresh-stats" class="btn">🔄 تحديث الإحصائيات</button>
         </section>
 
-        <!-- زر الإعلان (اختياري) -->
+        <!-- زر الإعلان -->
         <section class="card">
             <h2>📺 الإعلانات</h2>
             <button id="showAdBtn" class="btn btn-secondary">📢 مشاهدة إعلان (يدوي)</button>
@@ -230,20 +237,19 @@
     </div>
 
     <!-- ========================================================= -->
-    <!-- تفعيل الإعلانات التلقائية (كما طلبت)                      -->
+    <!-- تفعيل الإعلانات التلقائية                                  -->
     <!-- ========================================================= -->
     <script>
-        // الدالة التي تستدعي الإعلانات التلقائية
         function autoShowAds() {
             if (typeof show_11183003 === 'function') {
                 show_11183003({
                     type: 'inApp',
                     inAppSettings: {
-                        frequency: 2,      // عرض إعلانين
-                        capping: 0.1,      // خلال 0.1 ساعة (6 دقائق)
-                        interval: 30,      // 30 ثانية بين كل إعلان والآخر
-                        timeout: 5,        // تأخير 5 ثوانٍ قبل الأول
-                        everyPage: false   // لا تعيد ضبط الجلسة عند التنقل
+                        frequency: 2,
+                        capping: 0.1,
+                        interval: 30,
+                        timeout: 5,
+                        everyPage: false
                     }
                 });
                 console.log('✅ تم تشغيل الإعلانات التلقائية (In-App Interstitial)');
@@ -253,13 +259,10 @@
             }
         }
 
-        // تشغيل الإعلانات التلقائية بعد تحميل الصفحة (مع تأخير بسيط)
         window.addEventListener('load', function() {
-            // نعطي SDK وقتاً للتحميل (0.5 ثانية)
             setTimeout(autoShowAds, 500);
         });
 
-        // دالة العرض اليدوي (عند الضغط على الزر)
         function manualShowAd() {
             if (typeof show_11183003 === 'function') {
                 show_11183003({
@@ -280,7 +283,6 @@
 
         document.getElementById('showAdBtn').addEventListener('click', manualShowAd);
 
-        // التحقق من تحميل SDK
         function checkSDK() {
             if (typeof show_11183003 === 'function') {
                 console.log('✅ Monetag SDK جاهز');
