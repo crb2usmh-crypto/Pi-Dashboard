@@ -260,17 +260,15 @@
             <button id="convert-btn" class="btn">تحويل</button>
         </section>
 
-        <!-- ====== 🆕 تذكير التعدين ====== -->
-        <section class="card">
-            <h2>⏰ تذكير التعدين</h2>
-            <div class="mining-timer" id="mining-timer">--:--:--</div>
-            <p style="text-align:center; font-size:13px; color:var(--hint-color);">
-                الوقت المتبقي حتى التعدين القادم
-            </p>
-            <button id="remind-btn" class="btn btn-secondary" onclick="tg.showPopup({title: '⏰ تذكير', message: 'سيتم تذكيرك عند موعد التعدين القادم!', buttons: [{type:'ok'}]})">
-                🔔 تذكير عند التعدين
-            </button>
-        </section>
+        <!-- ====== ⏰ تذكير التعدين ====== -->
+<section class="card">
+    <h2>⏰ تذكير التعدين</h2>
+    <div class="mining-timer" id="mining-timer">⏳ اضغط للتذكير</div>
+    <p style="text-align:center; font-size:13px; color:var(--hint-color);">
+        اضغط على الزر لبدء العد التنازلي للتعدين القادم
+    </p>
+    <button id="remind-btn" class="btn btn-secondary">🔔 تفعيل تذكير التعدين</button>
+</section>
 
         <!-- ====== 🆕 أخبار Pi Network ====== -->
         <section class="card">
