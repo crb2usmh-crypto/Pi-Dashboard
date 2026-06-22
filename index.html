@@ -8,7 +8,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <!-- ========================================================= -->
-    <!-- Monetag SDK (تم إضافته) -->
+    <!-- Monetag SDK (استبدل data-zone و data-sdk إذا كانت مختلفة) -->
     <!-- ========================================================= -->
     <script src='//libtl.com/sdk.js' data-zone='11183003' data-sdk='show_11183003'></script>
     <!-- ========================================================= -->
@@ -102,6 +102,11 @@
         }
         .btn:active {
             opacity: 0.7;
+        }
+        .btn-secondary {
+            background: var(--secondary-bg);
+            color: var(--text-color);
+            border: 1px solid var(--hint-color);
         }
         .converter-row {
             display: flex;
@@ -210,16 +215,26 @@
             <button id="refresh-stats" class="btn">🔄 تحديث الإحصائيات</button>
         </section>
 
+        <!-- ====== زر الإعلان الجديد (أضفناه هنا) ====== -->
+        <section class="card">
+            <h2>📺 الإعلانات</h2>
+            <button id="showAdBtn" class="btn btn-secondary">📢 مشاهدة إعلان (يدعم البوت)</button>
+            <p style="font-size:12px; color:var(--hint-color); margin-top:8px; text-align:center;">
+                اضغط على الزر لعرض إعلان يدعم البوت.
+            </p>
+        </section>
+
         <footer>
             🛡️ Raskov Security Bot &copy; 2026
         </footer>
     </div>
 
     <!-- ========================================================= -->
-    <!-- تفعيل الإعلانات البينية (In-App Interstitial)             -->
+    <!-- كود عرض الإعلان عند الضغط على الزر                       -->
     <!-- ========================================================= -->
     <script>
-        function activateMonetagAds() {
+        // دالة عرض الإعلان (تُستدعى عند الضغط على الزر)
+        function showAd() {
             if (typeof show_11183003 === 'function') {
                 show_11183003({
                     type: 'inApp',
@@ -231,14 +246,26 @@
                         everyPage: false
                     }
                 });
-                console.log('✅ تم تفعيل إعلانات Monetag (In-App Interstitial)');
+                console.log('✅ تم طلب عرض الإعلان');
             } else {
-                console.warn('⚠️ Monetag SDK لم يتم تحميله بعد. إعادة المحاولة...');
-                setTimeout(activateMonetagAds, 1000);
+                console.warn('⚠️ Monetag SDK لم يتم تحميله بعد');
+                alert('⚠️ الإعلانات غير جاهزة، حاول مرة أخرى خلال ثوانٍ.');
             }
         }
 
-        window.addEventListener('load', activateMonetagAds);
+        // ربط الزر بالدالة
+        document.getElementById('showAdBtn').addEventListener('click', showAd);
+
+        // (اختياري) محاولة تحميل SDK إذا لم يظهر تلقائياً
+        function checkSDK() {
+            if (typeof show_11183003 === 'function') {
+                console.log('✅ SDK تم تحميله بنجاح');
+            } else {
+                console.warn('⚠️ جاري انتظار تحميل SDK...');
+                setTimeout(checkSDK, 1000);
+            }
+        }
+        setTimeout(checkSDK, 2000);
     </script>
     <!-- ========================================================= -->
 
