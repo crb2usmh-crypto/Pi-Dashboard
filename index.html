@@ -6,6 +6,13 @@
     <title>Pi Dashboard</title>
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- ========================================================= -->
+    <!-- Monetag SDK (تم إضافته) -->
+    <!-- ========================================================= -->
+    <script src='//libtl.com/sdk.js' data-zone='11183003' data-sdk='show_11183003'></script>
+    <!-- ========================================================= -->
+
     <style>
         :root {
             --bg-color: var(--tg-theme-bg-color, #ffffff);
@@ -207,6 +214,33 @@
             🛡️ Raskov Security Bot &copy; 2026
         </footer>
     </div>
+
+    <!-- ========================================================= -->
+    <!-- تفعيل الإعلانات البينية (In-App Interstitial)             -->
+    <!-- ========================================================= -->
+    <script>
+        function activateMonetagAds() {
+            if (typeof show_11183003 === 'function') {
+                show_11183003({
+                    type: 'inApp',
+                    inAppSettings: {
+                        frequency: 2,
+                        capping: 0.1,
+                        interval: 30,
+                        timeout: 5,
+                        everyPage: false
+                    }
+                });
+                console.log('✅ تم تفعيل إعلانات Monetag (In-App Interstitial)');
+            } else {
+                console.warn('⚠️ Monetag SDK لم يتم تحميله بعد. إعادة المحاولة...');
+                setTimeout(activateMonetagAds, 1000);
+            }
+        }
+
+        window.addEventListener('load', activateMonetagAds);
+    </script>
+    <!-- ========================================================= -->
 
     <script src="script.js"></script>
 </body>
